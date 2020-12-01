@@ -1,0 +1,1 @@
+BUILD.bat & set /P apikey="Enter API Key: " & docker run -e TELEGRAM_API_KEY=%apikey% kvrg/go-tor-bot:latest
