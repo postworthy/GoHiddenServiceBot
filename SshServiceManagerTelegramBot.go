@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+	"net/http"
 )
 
 type SshServiceManagerTelegramBot struct {
@@ -17,6 +18,16 @@ type SshServiceManagerTelegramBot struct {
 func (bot *SshServiceManagerTelegramBot) Init() {
 	bot.TelegramBot = TelegramBot{}
 	bot.TelegramBot.Init()
+
+	http.HandleFunc("/newsshconnection", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			msgTxt := r.URL.Query().Get("msg")
+			if bot.trustedChatID > 0 {
+				msg := tgbotapi.NewMessage(bot.trustedChatID, string(msgTxt))
+				bot.botApi.Send(msg)
+			}
+		}))
+
+	go http.ListenAndServe("127.0.0.1:8080", nil)
 
 	startTor := os.Getenv("START_TOR")
 
